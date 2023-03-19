@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class Button extends StatelessWidget {
+class ButtonCustom extends StatelessWidget {
   final VoidCallback? onPressed;
   final Color? textColor;
   final String? buttonText;
   final Color?  buttonColor;
 
-  const Button({Key? key, this.buttonText, this.buttonColor, this.onPressed, this.textColor}) : super(key: key);
+  const ButtonCustom({Key? key, this.buttonText, this.buttonColor, this.onPressed, this.textColor}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
