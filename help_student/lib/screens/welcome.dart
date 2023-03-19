@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:help_student/components/button_custom.dart';
 import 'package:help_student/screens/login.dart';
+import 'package:help_student/screens/register.dart';
 
 class Welcome extends StatelessWidget {
   const Welcome({Key? key}) : super(key: key);
@@ -41,7 +42,9 @@ class Welcome extends StatelessWidget {
               buttonText: "Primeiro Acesso",
               buttonColor: Colors.white,
               textColor: Colors.black,
-              onPressed: (){},
+              onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (_)=> const Register()));
+              },
             ),
             SizedBox(
               height: 20,

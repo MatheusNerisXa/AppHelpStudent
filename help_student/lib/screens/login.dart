@@ -91,7 +91,7 @@ class _LoginState extends State<Login> {
                       width: MediaQuery.of(context).size.height*0.15,
                       color: Colors.grey,
                 ),
-                    const Text("Or Login with"),
+                    const Text("       Entrar com   "),
                     Container(
                       height: 1,
                       width: MediaQuery.of(context).size.height*0.18,
