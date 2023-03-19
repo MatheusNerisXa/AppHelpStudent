@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:help_student/components/textfiled_custom.dart';
+import 'package:help_student/screens/forgot_password.dart';
 
 import '../components/button_custom.dart';
 
@@ -61,15 +62,20 @@ class _LoginState extends State<Login> {
                   hintText: "Digite sua senha",
                   isPassword: true
               ),
-              const Align(
+               Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
                   padding:  EdgeInsets.all(8.0),
-                  child:  Text(
-                    "Esqueceu sua senha?",
-                    style: TextStyle(
-                      color: Color(0xff6A707C),
-                      fontSize: 15,
+                  child:  InkWell(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> ForgotPassword()));
+                    },
+                    child: Text(
+                      "Esqueceu sua senha?",
+                      style: TextStyle(
+                        color: Color(0xff6A707C),
+                        fontSize: 15,
+                      ),
                     ),
                   ),
                 ),
