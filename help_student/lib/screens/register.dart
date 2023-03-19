@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:help_student/services/filebase_auth_service.dart';
 
 import '../components/button_custom.dart';
 import '../components/textfiled_custom.dart';
@@ -13,10 +15,10 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  TextEditingController _passwordController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _usenameController = TextEditingController();
-  TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usenameController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -80,8 +82,15 @@ class _RegisterState extends State<Register> {
                   buttonText: "Salvar",
                   buttonColor: Colors.orange,
                   textColor: Colors.white,
-                  onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const Login()));
+                  onPressed: () async {
+                    try{
+                      await FirebaseAuthService().signup(
+                          _emailController.text.trim(),
+                          _passwordController.text.trim());
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> Login()));
+                    } on FirebaseException catch (e){
+                        print(e.message);
+                    }
                   },
                 ),
                 Padding(

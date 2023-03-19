@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:help_student/components/textfiled_custom.dart';
 import 'package:help_student/screens/forgot_password.dart';
+import 'package:help_student/screens/home.dart';
+import 'package:help_student/screens/register.dart';
+import 'package:help_student/services/filebase_auth_service.dart';
 
 import '../components/button_custom.dart';
 
@@ -19,169 +23,192 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Container(
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: IconButton(
-                      icon: Icon(Icons.arrow_back_ios_sharp),
-                  onPressed:(){
-                    Navigator.pop(context);
-                }),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Text(
-                  "Bem vindo de volta! \nFico feliz em vê-lo novamente!",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold
+        body: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: IconButton(
+                        icon: Icon(Icons.arrow_back_ios_sharp),
+                    onPressed:(){
+                      Navigator.pop(context);
+                  }),
                   ),
                 ),
-              ),
-              CustomTextfield(
-                myController: _emailController,
-                hintText: "Digite seu email",
-                isPassword: false
-              ),
-              CustomTextfield(
-                  myController: _passwordController,
-                  hintText: "Digite sua senha",
-                  isPassword: true
-              ),
-               Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding:  EdgeInsets.all(8.0),
-                  child:  InkWell(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=> ForgotPassword()));
-                    },
-                    child: Text(
-                      "Esqueceu sua senha?",
-                      style: TextStyle(
-                        color: Color(0xff6A707C),
-                        fontSize: 15,
-                      ),
+                const Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Text(
+                    "Bem vindo de volta! \nFico feliz em vê-lo novamente!",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold
                     ),
                   ),
                 ),
-              ),
-              ButtonCustom(
-                buttonText: "Entrar",
-                buttonColor: Colors.orange,
-                textColor: Colors.white,
-                onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const Login()));
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 1,
-                      width: MediaQuery.of(context).size.height*0.15,
-                      color: Colors.grey,
+                CustomTextfield(
+                  myController: _emailController,
+                  hintText: "Digite seu email",
+                  isPassword: false
                 ),
-                    const Text("       Entrar com   "),
-                    Container(
-                      height: 1,
-                      width: MediaQuery.of(context).size.height*0.18,
-                      color: Colors.grey,
-                    ),
-                  ],
+                CustomTextfield(
+                    myController: _passwordController,
+                    hintText: "Digite sua senha",
+                    isPassword: true
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      height: 50,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: IconButton(
-                        icon: Icon(
-                          FontAwesomeIcons.facebookF,
-                          color: Colors.blue,
+                 Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding:  EdgeInsets.all(8.0),
+                    child:  InkWell(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> ForgotPassword()));
+                      },
+                      child: Text(
+                        "Esqueceu sua senha?",
+                        style: TextStyle(
+                          color: Color(0xff6A707C),
+                          fontSize: 15,
                         ),
+                      ),
+                    ),
+                  ),
+                ),
+                ButtonCustom(
+                  buttonText: "Entrar",
+                  buttonColor: Colors.orange,
+                  textColor: Colors.white,
+                  onPressed: () async{
+                      try{
+                        await FirebaseAuthService().login(_emailController.text.trim(), _passwordController.text.trim());
+                        if(FirebaseAuth.instance.currentUser != null) {
+                           Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+                        }
+                        else{
+                          showDialog(context: context, builder: (context) => AlertDialog(
+                            title: Text("Invalid Username or password. Please register again or make sure that username and password is correct."),
+                            actions: [
+                              ElevatedButton(
+                                child: Text("Cadastrar-se agora"),
+                                onPressed: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=> Register()));
+                                }
+                              )
+                            ],
+                          ));
+                        }
+                      } on FirebaseException catch (e){
+                          print(e.message);
+                      }
+                    // Navigator.push(context, MaterialPageRoute(builder: (_) => const Login()));
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 1,
+                        width: MediaQuery.of(context).size.height*0.15,
+                        color: Colors.grey,
+                  ),
+                      const Text("       Entrar com   "),
+                      Container(
+                        height: 1,
+                        width: MediaQuery.of(context).size.height*0.18,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        height: 50,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black, width: 1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            FontAwesomeIcons.facebookF,
+                            color: Colors.blue,
+                          ),
+                            onPressed: (){},
+                        ),
+                      ),
+                      Container(
+                        height: 50,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black, width: 1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            FontAwesomeIcons.google,
+                          ),
                           onPressed: (){},
-                      ),
-                    ),
-                    Container(
-                      height: 50,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: IconButton(
-                        icon: Icon(
-                          FontAwesomeIcons.google,
                         ),
-                        onPressed: (){},
                       ),
-                    ),
-                    Container(
-                      height: 50,
-                      width: 100,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: IconButton(
-                        icon: Icon(
-                          FontAwesomeIcons.apple,
+                      Container(
+                        height: 50,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black, width: 1),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        onPressed: (){},
+                        child: IconButton(
+                          icon: Icon(
+                            FontAwesomeIcons.apple,
+                          ),
+                          onPressed: (){},
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 140,
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(48,8,8,8.0),
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: const [
-                     Text(
-                      "Esqueceu sua senha?",
-                      style: TextStyle(
-                        color: Color(0xff1E232C),
-                        fontSize: 15,
+                SizedBox(
+                  height: 140,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(48,8,8,8.0),
+                  child: Row(
+                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: const [
+                       Text(
+                        "Esqueceu sua senha?",
+                        style: TextStyle(
+                          color: Color(0xff1E232C),
+                          fontSize: 15,
+                        ),
                       ),
-                    ),
-                     Text(" Registrar agora",
-                       style: TextStyle(
-                         color: Color(0xff35C2c1),
-                         fontSize: 15,
+                       Text(" Registrar agora",
+                         style: TextStyle(
+                           color: Color(0xff35C2c1),
+                           fontSize: 15,
+                         ),
                        ),
-                     ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
